@@ -1,0 +1,21 @@
+# Virtual Environment
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Spotify cache
+.cache
+
+# Local environment variables files
+.env
+
+# macOS system files
+.DS_Store
+
+playlists.json
+config.json
+tracks.json
