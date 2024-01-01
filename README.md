@@ -103,7 +103,7 @@ ___
 
 #### Creating a Spotify API Key:
 
- - Go to Spotify Developer. 
+ - Go to [Spotify Developer](https://developer.spotify.com/). 
  - Log in with your Spotify account or create a new account.
  - Create a new application in the developer dashboard.
  - Copy your Client ID and Client Secret into the project's .env file.
