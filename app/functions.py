@@ -1,8 +1,8 @@
-from app.auth import spotipy
 from app.library_config import get_base_directory, load_from_config
 from app.utils import from_json, printc, to_json, set_folder_icon, error_handler
 from app.auth import os
 import subprocess
+import platform
 
 @error_handler
 def create_track_dict(track):
@@ -48,7 +48,8 @@ def update_library():
         album_folder = os.path.join(base_directory, f"{track['artist']} - {track['album']}")
         if not os.path.exists(album_folder):
             os.makedirs(album_folder)
-            set_folder_icon(album_folder, track['album_image'])
+            if platform.system() == 'Darwin':
+                set_folder_icon(album_folder, track['album_image'])
         
         os.chdir(album_folder)
         output_filename = "{} - {}.mp3".format(track['artist'], track['name']).replace("/","").replace("?", "").replace('"', "'")
