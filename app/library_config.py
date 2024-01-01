@@ -1,8 +1,9 @@
 from app.auth import os
-from app.utils import printc, from_json, to_json
+from app.utils import printc, from_json, to_json, error_handler
 os.environ['TK_SILENCE_DEPRECATION'] = '1'
 from tkinter import Tk, filedialog
 
+@error_handler
 def get_base_directory():
     root = Tk()
     root.attributes('-topmost', True)
@@ -14,11 +15,13 @@ def get_base_directory():
     root.destroy()
     return base_directory
 
+@error_handler
 def save_to_config(base_directory):
     config_data = {"base_directory": base_directory}
     to_json(config_data, "config.json", "w")
     printc("Base directory saved to the config file.", 'green')
 
+@error_handler
 def load_from_config():
     config_data = from_json("config.json")
     base_directory = config_data.get("base_directory")
