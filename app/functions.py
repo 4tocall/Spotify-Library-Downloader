@@ -1,10 +1,10 @@
+from app.auth import spotipy
 from app.library_config import get_base_directory, load_from_config
-from app.utils import from_json, printc, to_json, set_folder_icon, error_handler
+from app.utils import from_json, printc, to_json, set_folder_icon
 from app.auth import os
 import subprocess
 import platform
 
-@error_handler
 def create_track_dict(track):
     if track['track']['album']['album_type'] != "album": 
         album = f"{track['track']['album']['name']} ({track['track']['album']['album_type']})"
@@ -19,20 +19,25 @@ def create_track_dict(track):
         'album_image': track["track"]["album"]["images"][0]["url"]
     }
 
-@error_handler
 def get_user_playlists(spotify_connection):
     printc("Retrieving playlist information...", 'white', 0.2)
-    tracks = []  
-    playlists = spotify_connection.current_user_playlists()
-    for playlist in playlists["items"]:
-        playlist_tracks = spotify_connection.playlist_items(playlist["id"])
-        for track in playlist_tracks["items"]:
-            track_dict = create_track_dict(track)
-            tracks.append(track_dict)
-    to_json(tracks, 'tracks.json', 'w')
-    printc("Playlist information retrieved", 'white', 0.5)
-
-@error_handler
+    try:
+        tracks = []  
+        playlists = spotify_connection.current_user_playlists()
+        for playlist in playlists["items"]:
+            playlist_tracks = spotify_connection.playlist_items(playlist["id"])
+            for track in playlist_tracks["items"]:
+                track_dict = create_track_dict(track)
+                tracks.append(track_dict)
+        to_json(tracks, 'tracks.json', 'w')
+        printc("Playlist information retrieved", 'white', 0.5)
+    except spotipy.SpotifyException as e:
+        printc(f"Spotify exception: {e}", "red")
+        return None
+    except Exception as e:
+        printc(f"An unexpected error occurred: {e}", "red")    
+        return None
+    
 def update_library():
     base_directory = load_from_config()
     
@@ -49,8 +54,7 @@ def update_library():
         if not os.path.exists(album_folder):
             os.makedirs(album_folder)
             if platform.system() == 'Darwin':
-                set_folder_icon(album_folder, track['album_image'])
-        
+                set_folder_icon(album_folder, track['album_image'])        
         os.chdir(album_folder)
         output_filename = "{} - {}.mp3".format(track['artist'], track['name']).replace("/","").replace("?", "").replace('"', "'")
         found = False

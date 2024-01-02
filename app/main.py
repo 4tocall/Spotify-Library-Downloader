@@ -1,7 +1,7 @@
 from app.auth import connect_to_spotify, validate_environment_variables
 from app.functions import get_user_playlists, update_library
 from app.library_config import get_base_directory
-from app.utils import printc, error_handler
+from app.utils import printc
 import argparse
 
 def show_menu():
@@ -11,7 +11,6 @@ def show_menu():
     printc("[3] Update Library !", "cyan")
     printc("[0] Quit", "cyan")
 
-@error_handler
 def app():
     parser = argparse.ArgumentParser(description='Spotify Library Downloader')
     parser.add_argument('-update', action='store_true')
@@ -22,32 +21,35 @@ def app():
 
     printc("Logging in to Spotify...", "white", 0.2)
     required_env_vars = ["SPOTIPY_CLIENT_ID", "SPOTIPY_CLIENT_SECRET", "SPOTIPY_REDIRECT_URI"]
-    validate_environment_variables(required_env_vars)
-    printc("Validating environment variables...", "white", 0.2)
-    spotify_connection = connect_to_spotify()
+    try:
+        validate_environment_variables(required_env_vars)
+        printc("Validating environment variables...", "white", 0.2)
+        spotify_connection = connect_to_spotify()
 
-    if spotify_connection:
-        if update:
-            get_user_playlists(spotify_connection)
-            update_library()
+        if spotify_connection:
+            if update:
+                get_user_playlists(spotify_connection)
+                update_library()
+            else:
+                printc("Program started successfully.", "white", 0.5)
+                while True:
+                    show_menu()       
+                    choice = input()
+                    if choice == "1":
+                        get_base_directory()
+                    elif choice == "2":
+                        get_user_playlists(spotify_connection)
+                    elif choice == "3":
+                        update_library()  
+                    elif choice == "0":
+                        printc("Pye !", "magenta")
+                        break
+                    else:
+                        printc("Invalid choice. Please enter a valid number.", "red", 0.3)
         else:
-            printc("Program started successfully.", "white", 0.5)
-            while True:
-                show_menu()       
-                choice = input()
-                if choice == "1":
-                    get_base_directory()
-                elif choice == "2":
-                    get_user_playlists(spotify_connection)
-                elif choice == "3":
-                    update_library()  
-                elif choice == "0":
-                    printc("Pye !", "magenta")
-                    break
-                else:
-                    printc("Invalid choice. Please enter a valid number.", "red", 0.3)
-    else:
-        printc("Unable to connect to Spotify. Please check authentication information.", "red")
+            printc("Unable to connect to Spotify. Please check authentication information.", "red")
+    except ValueError as ve:
+        printc(str(ve), 'red')
 
 if __name__ == "__main__":
     app()
