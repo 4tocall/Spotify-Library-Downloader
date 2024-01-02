@@ -5,7 +5,9 @@
 
 ## Overview
 
-The Spotify Playlist Manager is a Python-based tool for simplified management and downloading of Spotify playlists.
+The Spotify Playlist Manager is a Python-based tool for simplified management and downloading of Spotify playlists. 
+
+(Work on Python 3.10.9)
 
 ## Features
 
@@ -52,7 +54,7 @@ Open a terminal and navigate to the project's directory.
 Create a virtual environment by running the following command:
 
    ```bash
-   python -m venv venv
+   virtualenv venv --python=python3.10.9
    ```
 
 #### Activate the virtual environment:
